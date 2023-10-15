@@ -9,6 +9,9 @@ def index(request):
     return render(request, "encyclopedia/index.html", {
         "entries": util.list_entries()
     })
+    
+def search(request):
+    return HttpResponse(f"you search {q}")
 
 
 def article(request, article_name):
