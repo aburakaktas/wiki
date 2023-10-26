@@ -11,8 +11,14 @@ class SearchInput(forms.Form):
     search_query = forms.CharField(label="Search:")
 
 
+class NewPageInput(forms.Form):
+    title = forms.CharField(label="Title:")
+    body = forms.CharField(widget=forms.Textarea)
+
+searchInput = SearchInput()
+
 def index(request):
-    searchInput = SearchInput()
+    
     return render(request, "encyclopedia/index.html", {
         "entries": util.list_entries(),
         "form": searchInput,
@@ -45,6 +51,7 @@ def search(request):
                 print("matched entries:", matched_entries)
                 
                 return render(request, "encyclopedia/results.html", {
+                    "form": searchInput,
                     "matched_entries": matched_entries,
                     "search_query": search_query
                 })
@@ -70,3 +77,12 @@ def article(request, article_name):
                        })
     else:
         return HttpResponse("404 not found")
+
+
+def new_page(request):
+    newPageInput = NewPageInput()
+    return render(request, "encyclopedia/newpage.html",
+                  {
+                      "form": searchInput,
+                      "new_page_input": newPageInput
+                  })
