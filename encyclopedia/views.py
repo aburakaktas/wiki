@@ -33,23 +33,17 @@ def search(request):
 
             # check if search query matches an existing entry. if yes redirect to that page
             if util.get_entry(search_query):
-                print(search_query, "found")
                 return HttpResponseRedirect(f"/wiki/{search_query}")
 
             # if entry cannot be found, list entries that match as a substring and redirect to search results page
             else:
-                print(search_query, "not found")
                 all_entries = util.list_entries()
-                print(all_entries)
 
                 # list all matched entries
                 matched_entries = []
                 for entry in all_entries:
                     if search_query in entry.lower():
                         matched_entries.append(entry)
-
-                print("matched entries:", matched_entries)
-                
                 return render(request, "encyclopedia/results.html", {
                     "form": searchInput,
                     "matched_entries": matched_entries,
@@ -69,8 +63,6 @@ def article(request, article_name):
     article = util.get_entry(article_name)
     if article:
         article_title = re.findall("^# (.*)", article)
-        # print("title:", article_title[0])
-        # print(article)
         return render(request, "encyclopedia/article.html",
                       {"article": markdown2.markdown(article),
                        "article_title": article_title[0],
