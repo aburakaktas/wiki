@@ -6,4 +6,8 @@
 
 {% block body %}
 {{article | safe}}
+
+<a href="{% url 'wiki:edit_article' article_name=article_title %}">Edit</a>
+
 {% endblock %}
+

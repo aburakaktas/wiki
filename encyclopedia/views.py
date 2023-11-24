@@ -13,7 +13,7 @@ class SearchInput(forms.Form):
 
 class NewPageInput(forms.Form):
     title = forms.CharField(label="Title:")
-    body = forms.CharField(widget=forms.Textarea)
+    body = forms.CharField(widget=forms.Textarea(attrs={'rows': 10, 'cols': 40, 'width':"100%",}))
 
 searchInput = SearchInput()
 
@@ -62,10 +62,12 @@ def results(request):
 def article(request, article_name):
     article = util.get_entry(article_name)
     if article:
-        article_title = re.findall("^# (.*)", article)
+        print("article:", article)
+        
+        print("article title:", article_name)
         return render(request, "encyclopedia/article.html",
                       {"article": markdown2.markdown(article),
-                       "article_title": article_title[0],
+                       "article_title": article_name,
                        })
     else:
         return HttpResponse("404 not found")
@@ -73,8 +75,50 @@ def article(request, article_name):
 
 def new_page(request):
     newPageInput = NewPageInput()
-    return render(request, "encyclopedia/newpage.html",
-                  {
-                      "form": searchInput,
-                      "new_page_input": newPageInput
-                  })
+    
+    if request.method == "POST":
+        form = NewPageInput(request.POST)
+        if form.is_valid():
+            title = form.cleaned_data["title"]
+            body = form.cleaned_data["body"]
+
+            if (util.get_entry(title)):
+                error = "Article already exists, try a different title."
+                return render(request, "encyclopedia/newpage.html",
+                    {
+                        "form": searchInput,
+                        "new_page_input": newPageInput,
+                        "error": error,
+                    })
+            util.save_entry(title, body)
+            return HttpResponseRedirect(f"/wiki/{title}")
+            
+    else:
+        return render(request, "encyclopedia/newpage.html",
+                    {
+                        "form": searchInput,
+                        "new_page_input": newPageInput
+                    })
+
+
+def edit_article(request, article_name):
+    
+    if request.method == "POST":
+        form = NewPageInput(request.POST)
+        if form.is_valid():
+            title = form.cleaned_data["title"]
+            body = form.cleaned_data["body"]
+            util.save_entry(title, body)
+            return HttpResponseRedirect(f"/wiki/{title}")
+
+    
+    else:
+        article = util.get_entry(article_name)
+        if article:
+            edit_data = {'title': article_name, 'body': article}
+            edit_form = NewPageInput(initial=edit_data)
+            return render(request, 'encyclopedia/edit_page.html', {
+                "form": searchInput,
+                'edit_form': edit_form,
+                'article_title': article_name,
+            })

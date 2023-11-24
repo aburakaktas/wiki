@@ -1,15 +1,14 @@
 {% extends "encyclopedia/layout.html" %}
 
 {% block title %}
-    Create a new page
+    Edit page
 {% endblock %}
 
 {% block body %}
-    <h1>Create a new page</h1>
-    <h3>{{ error }}</h2>
+    <h1>Edit page</h1>
     <form method="POST">
         {% csrf_token %}
-        {{new_page_input}}
+        {{edit_form.as_p}}
         <button type="submit">Submit</button>
     </form>
 
