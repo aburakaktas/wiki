@@ -10,5 +10,6 @@ urlpatterns = [
     path("search", views.search, name="search"),
     path("results", views.results, name="results"),
     path("newpage", views.new_page, name="newpage"),
+    path("randompage", views.random_page, name="randompage"),
     path('wiki/<str:article_name>/edit/', views.edit_article, name='edit_article'),
 ]

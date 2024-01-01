@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 import markdown2
+import random
 import re
 from . import util
 from django import forms
@@ -68,6 +69,7 @@ def article(request, article_name):
         return render(request, "encyclopedia/article.html",
                       {"article": markdown2.markdown(article),
                        "article_title": article_name,
+                        "form": searchInput,
                        })
     else:
         return HttpResponse("404 not found")
@@ -122,3 +124,13 @@ def edit_article(request, article_name):
                 'edit_form': edit_form,
                 'article_title': article_name,
             })
+        
+def random_page(request):
+    all_entries = util.list_entries()
+    random_entry_name = random.choice(all_entries)
+    random_entry = util.get_entry(random_entry_name)
+    return render(request, "encyclopedia/article.html",
+                  {"article": markdown2.markdown(random_entry),
+                   "article_title": random_entry_name,
+                    "form": searchInput,
+                   })
